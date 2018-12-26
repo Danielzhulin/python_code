@@ -1,0 +1,266 @@
+#!/usr/bin/env python3.7
+
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('file_name',help='the file to read')
+parser.add_argument('line_number',type=int,help='the line to print from the file')
+
+args = parser.parse_args()
+
+try:
+    lines = open(args.file_name,'r').readlines()
+    line = lines[args.line_number-1]
+except IndexError:
+    print(f"Error: file {args.file_name} doesn't have {args.line_number} lines")
+except IOError as err:
+    print(f"Error: {err}")
+else:
+    print(line)
+
+#!/usr/bin/env python3.7
+
+message = input("Please input your message : ")
+count = input("Please input the count number: ")
+if count:
+    count = int(count)
+else:
+    count = 1
+def loop_display(message,count):
+    while count>0:
+        print(message)
+        count -= 1
+loop_display(message,count)
+     
+#!/usr/bin/env python3.7
+
+import random
+import os
+import json
+
+count = int(os.getenv("FILE_COUNT") or 5)
+words = [word.strip() for word in open('/usr/share/dict/words').readlines()]
+
+for indentifier in range(count):
+    amount = random.uniform(1.0,1000)
+    content = {
+        'topic': random.choice(words),
+        'value': "%.2f" % amount
+    }
+    with open(f'./new/receipt-{indentifier}.json','w') as f:
+        json.dump(content,f)
+#!/usr/bin/env python3.7
+
+import random
+import os
+import json
+
+count = int(os.getenv("FILE_COUNT") or 5)
+words = [word.strip() for word in open('/usr/share/dict/words').readlines()]
+
+for identifier in range(count):
+    amount = random.uniform(1.0, 1000)
+    content = {
+        'topic': random.choice(words),
+        'value': "%.2f" % amount
+    }
+    with open(f'./new/receipt-{identifier}.json', 'w') as f:
+        json.dump(content, f)
+#!/usr/bin/env python3.7
+
+import subprocess
+import os
+from argparse import ArgumentParser
+
+parser = ArgumentParser(description='kill the running process listening on a given port')
+parser.add_argument('port', type=int, help='the port number to search for')
+
+port = parser.parse_args().port
+
+try:
+    result = subprocess.run(
+            ['lsof', '-n', "-i4TCP:%s" % port],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+except subprocess.CalledProcessError:
+    print(f"No process listening on port {port}")
+else:
+    listening = None
+
+    for line in result.stdout.splitlines():
+        if "LISTEN" in str(line):
+            listening = line
+            break
+
+    if listening:
+        # PID is the second column in the output
+        pid = int(listening.split()[1])
+        os.kill(pid, 9)
+        print(f"Killed process {pid}")
+    else:
+        print(f"No process listening on port {port}")
+#!/usr/bin/env python3.7
+
+def get_input(reprompt = False):
+    if reprompt:
+        print("Please enter a file name.")
+    file_name = input("Destination file name: ").strip()
+    return file_name or get_input(True)
+
+file_name = get_input()
+
+print(f"Please enter your content, entering am emputy line will write all the content to the file {file_name}\n")
+
+with open(file_name,'w') as f:
+    eof = False
+    lines = []
+    while not eof:
+        line = input()
+        if line.strip():
+            lines.append(f"{line}\n")
+        else:
+            eof = True
+    f.writelines(lines)
+    print(f"Write line to file {file_name}")
+#!/usr/bin/env python3.7
+
+import os
+import glob
+import shutil
+import json
+
+try:
+    os.mkdir("./processed")
+except OSError:
+    print("'processed' directory already exists")
+
+#get a list of receipts
+receipts = glob.glob('./new/receipt-[0-9]*.json')
+subtotal = 0.0
+
+print(receipts)
+
+for path in receipts:
+    with open(path) as f:
+        content = json.load(f)
+        subtotal += float(content['value'])
+    name = path.split('/')[-1]
+    destination = f"./processed/{name}"
+    shutil.move(path,destination)
+    print(f"Moved '{path}' to '{destination}'")
+print(f"Receipts total: $%.2f" % subtotal)
+#!/usr/bin/env python3.7
+first_name = "Daniel"
+last_name = "Zhu"
+age = 34
+birth_date =" August 22, 1984"
+print(f"My name is {first_name} {last_name}")
+print(f"I was born on {birth_date}, and I'm {age} years old")
+
+#!/usr/bin/env python3.7
+user = {'admin':True,'active':True,'name':'Kevin'}
+prifix = ""
+if user['admin'] and user['active']:
+    prifix += "ADMIN - (ACTIVE)"
+elif user['admin']:
+    prifix += "ADMIN"
+elif user['active']:
+    prifix = "ACTIVE-"
+print(prifix+user['name'])
+
+#!/usr/bin/env python3.7
+users =  [
+     {'admin':True,'active':True,'name':'Kevin'},
+     {'admin':False,'active':True,'name':'James'},
+     {'admin':True,'active':False,'name':'Kim'},
+     {'admin':False,'active':False,'name':'Thomas'},
+     {'admin':True,'active':False,'name':'Sam'},
+]
+linenum = 1
+#user = {'admin':True,'active':True,'name':'Kevin'}
+#prifix =f"{linenum}: "
+for user in users:
+    prifix =f"{linenum}: "
+    if user['admin'] and user['active']:
+        prifix += "ADMIN - (ACTIVE) "
+    elif user['admin']:
+        prifix += "ADMIN "
+    elif user['active']:
+        prifix += "ACTIVE - "
+    print(prifix+user['name'])
+    linenum +=1
+#!/usr/bin/env python3.7
+name = input("What is your name? ")
+birthdate = input("What is your birthdate? ")
+age = int(input("How old are you? "))
+
+print(f"{name} was born on {birthdate}")
+print(f"Half of your age is {age / 2}")
+#!/usr/bin/env python3.7 
+def gather_info():
+    height = float(input("What is your height? (inches or meters) "))
+    weight = float(input("What is your weight? (pounds or kilograms) "))
+    system = input("Are your mearsurements in metric or imperial systems? ").lower().strip()
+    return (height, weight, system)
+
+def calculate_bmi(weight, height, system='metric'):
+    if system == 'metric':
+        bmi = (weight / (height ** 2))
+    else:
+        bmi = 703 * (weight / (height ** 2))
+    return bmi
+
+while True:
+    height, weight, system = gather_info()
+    if system.startswith('i'):
+        bmi = calculate_bmi(weight, system='imperial', height=height)
+        print(f"Your BMI is {bmi}")
+        break
+    elif system.startswith('m'):
+        bmi = calculate_bmi(weight, height)
+        print(f"Your BMI is {bmi}")
+        break
+    else:
+        print("Error: Unknown measurement system. Please use imperial or metric.")
+#!/usr/bin/env python3.7
+
+def gether_info():
+    height = float(input("Please input your height?(inches or meters)"))
+    weight = float(input("Please input your weight?(pounds or kilograms)"))
+    system = input("Are your measurements in metric or imperial systems?").lower().strip()
+    return (height, weight, system)
+
+def calculate_bmi(weight, height, system='metric'):
+    if system == 'metric':
+        bmi = (weight / (height ** 2))
+    else:
+        bmi = 703*(weight / (height ** 2))
+    return bmi
+
+while True:
+    height, weight, system = gether_info()
+    if system.startswith('i'):
+        bmi = calculate_bmi(weight, height, 'imperial')
+        print(f"Dear, your BMI is {bmi}")
+        break
+    elif system.startswith('m'):
+        bmi = calculate_bmi(weight, height, 'metric')
+        print(f"Dear, your BMI is {bmi}")
+        break
+    else:
+        printf("Error: unknown measurement system, please use: metric or imperial")
+#!/usr/bin/env python3.7
+
+from time import localtime, mktime, strftime
+
+start_time = localtime()
+print(f"Timer started at {strftime('%X', start_time)}")
+
+# Wait for user to stop timer
+input("Press any key to stop timer ")
+
+stop_time = localtime()
+difference = mktime(stop_time) - mktime(start_time)
+
+print(f"Timer stopped at {strftime('%X', stop_time)}")
+print(f"Total time: {difference} seconds")
